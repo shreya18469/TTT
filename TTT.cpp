@@ -52,13 +52,27 @@ int main(){
 
 void move( char (&board)[3][3], int &turn){
   char input[3];
-  int x = -1;
-  int y = -1;
+  int x;
+  int y;
   bool invalidInput = true;
   cout << "Whats your move?" << endl;
   cin >> input;
-    
-  while(invalidInput == true){
+   
+  if (input[0] != 'a' && input[0] != 'b' && input[0] != 'c'){
+    cout << "Row must be an a, b, or c" << endl;
+     if (turn == X_TURN){
+          turn = O_TURN;
+        } else if (turn == O_TURN){
+          turn = X_TURN;
+        }
+      } else if (input[1] != '1' && input[1] != '2' && input[1] != '3'){
+    cout << "Column must be a 1, 2, or 3" << endl;
+     if (turn == X_TURN){
+          turn = O_TURN;
+        } else if (turn == O_TURN){
+          turn = X_TURN;
+        }
+  } else {
       if (input[0] == 'a'){
         x = 0;
       } else if (input[0] == 'b'){
@@ -73,44 +87,35 @@ void move( char (&board)[3][3], int &turn){
       } else if (input[1] == '3'){
         y = 2;
       }
-
-      if (input[0] == 'a' || input[0] == 'b' || input[0] == 'c'){
-        if (input[1] == '1' || input[1] == '2' || input[1] == '3'){
-          if (board[x][y] == BLANK){
-            invalidInput = false;
-          }
-        }
+      if (board[x][y] == BLANK){
+	if (turn == X_TURN){
+	  board[x][y] = 'X';
+	  return;
+    }
+	if (turn == O_TURN){
+	  board[x][y] = 'O';
+	  return;
+    }
+      } else if (board[x][y] != BLANK){
+	cout << "This spot is taken" << endl;
+	if (turn == X_TURN){
+	  turn = O_TURN;
+	} else if (turn == O_TURN){
+	  turn = X_TURN;
+	}
+	return; 
       }
-      if (invalidInput == true){
-        cout << "Not a valid move." << endl;
-        cin >> input;
-        cout << input;
-      }
-      invalidInput = false;
-    }
-   if (turn == X_TURN){
-      board[x][y] = 'X';
-      return;
-    }
-    if (turn == O_TURN){
-      board[x][y] = 'O';
-      return;
-    }
+  }
 }
 
 void restart(bool &playAgainb, int X_WINS, int O_WINS, int numTies, int &turn){
-  char input[2];
+  cout << "Current stats:" << endl;
   cout << "X Wins: " << X_WINS << endl;
   cout << "O wins: " << O_WINS << endl;
   cout << "Ties: " << numTies << endl;
-  cout << "Do you want to play again? Enter y or n." << endl;
-  cin >> input;
-  if(input[0] == 'n'){
-    playAgainb = false;
-  } else if (input[0] == 'y') {
+  
     playAgainb = true;
-  }
-}
+ }
 
 void printBoard(char board[3][3]){
     cout << " 123" << endl;
@@ -130,7 +135,19 @@ void clearBoard(char (&board)[3][3], int &turn){ // reset the board
 }
 
 bool checkTie(char (&board)[3][3], int &turn){
-  
+  if (turn == X_TURN){
+    turn = O_TURN;
+  } else {
+    turn = X_TURN;
+  }
+  for (int row = 0; row < 3; row++){
+    for (int col = 0; col < 3; col++){
+      if (board[row][col] == BLANK){
+	return false;
+      }
+    }
+  }
+  return true;
 }
  bool checkWin(char (&board)[3][3], int &turn){ // check all win possibilities
   char temp  = ' ';
@@ -141,18 +158,20 @@ bool checkTie(char (&board)[3][3], int &turn){
   }
   if (board[0][0] == temp && board[0][1] == temp && board[0][2] == temp){
     return true;
-  } if (board[1][0] == temp && board[1][1] == temp && board[1][2] == temp) {
-     return true;
-  } if (board[2][0] == temp && board[2][1] == temp && board[2][2] == temp) { 
-     return true;
-  } if (board[0][0] == temp && board[1][0] == temp && board[2][0] == temp) { 
-     return true;
+  } if (board[0][0] == temp && board[1][1] == temp && board[2][2] == temp) {
+    return true;
   } if (board[0][1] == temp && board[1][1] == temp && board[2][1] == temp) { 
-     return true;
+    return true;
   } if (board[0][2] == temp && board[1][2] == temp && board[2][2] == temp) { 
-     return true;
-  } if (board[2][0] == temp && board[1][1] == temp && board[2][1] == temp) { 
-     return true;
+    return true;
+  } if (board[1][0] == temp && board[1][1] == temp && board[1][2] == temp) { 
+    return true;
+  } if (board[2][0] == temp && board[2][1] == temp && board[2][2] == temp) { 
+    return true;
+  } if (board[0][2] == temp && board[1][1] == temp && board[2][0] == temp) { 
+    return true;
+  } if (board[0][0] == temp && board[1][0] == temp && board[2][0] == temp){
+    return true;
   }
   return false;
 }
